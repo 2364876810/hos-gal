@@ -27,6 +27,20 @@
              data-hover-src="./image/看板娘/点击触发.png"
              data-default-src="./image/看板娘/看板娘_small.webp"
              alt="看板娘">
+        <!-- 游戏场景：静态写在 HTML 里，默认隐藏，由 JS 控制显示/隐藏 -->
+        <div class="game-scene" style="display:none">
+            <img class="game-bg" alt="游戏背景">
+            <div class="game-sprite-wrap"><img class="game-sprite" alt="角色立绘"></div>
+            <div class="game-dialog">
+                <div class="game-name"></div>
+                <div class="game-chat-history"></div>
+                <div class="game-input-bar">
+                    <input class="game-input" type="text" placeholder="输入你的话，回车发送...">
+                    <button class="game-send">发送</button>
+                </div>
+            </div>
+            <div class="game-exit">返回菜单</div>
+        </div>
         <script src="./角色素材/roles.js"></script>
         <script src="./script/style.js"></script>
     </body>

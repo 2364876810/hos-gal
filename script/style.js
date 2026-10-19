@@ -367,26 +367,14 @@ function startGame(bgPath) {
     const girl = document.querySelector('.kanban-girl');
     if (girl) girl.style.display = 'none';
 
-    let scene = document.querySelector('.game-scene');
-    if (!scene) {
-        scene = document.createElement('div');
-        scene.className = 'game-scene';
-        scene.innerHTML = `
-            <img class="game-bg" alt="游戏背景">
-            <div class="game-sprite-wrap"><img class="game-sprite" alt="角色立绘"></div>
-            <div class="game-dialog">
-                <div class="game-name"></div>
-                <div class="game-chat-history"></div>
-                <div class="game-input-bar">
-                    <input class="game-input" type="text" placeholder="输入你的话，回车发送...">
-                    <button class="game-send">发送</button>
-                </div>
-            </div>
-            <div class="game-exit">返回菜单</div>`;
-        document.body.appendChild(scene);
-        scene.querySelector('.game-exit').addEventListener('click', exitGame);
+    // 场景结构已静态写在 index.html 里，这里直接取用
+    const scene = document.querySelector('.game-scene');
+    if (!scene) return;
 
-        // 输入框交互
+    // 事件只绑定一次
+    if (!scene.dataset.bound) {
+        scene.dataset.bound = '1';
+        scene.querySelector('.game-exit').addEventListener('click', exitGame);
         const input = scene.querySelector('.game-input');
         const sendBtn = scene.querySelector('.game-send');
         const send = () => sendUserMessage(scene, input, sendBtn);
@@ -408,10 +396,7 @@ function startGame(bgPath) {
     }
 
     scene.querySelector('.game-name').textContent = currentRole;
-    // 切换到新场景时清空历史（保留场景时不清）
-    if (scene.querySelector('.game-chat-history').children.length === 0) {
-        scene.querySelector('.game-chat-history').innerHTML = '';
-    }
+    scene.querySelector('.game-chat-history').innerHTML = ''; // 每次开局清空对话
     scene.style.display = 'block';
 }
 
