@@ -1,9 +1,20 @@
+/* ===== 页面固定：禁止滚动条，任何情况下不出现滚轮滚动 ===== */
+html, body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;          /* 裁掉溢出内容，不出滚动条 */
+    overscroll-behavior: none; /* 禁止回弹/链式滚动 */
+}
 .wrap{
    display: flex;
    gap: 10px;
     margin-top: 30px;
    justify-content: flex-end; /* 内部盒子全部靠右 */
    margin-right:10px; /* 盒子组距离页面右边缘留出10px空隙，防止贴边 */
+   transform: scale(var(--fit, 1)); /* 跟随窗口等比缩放 */
+   transform-origin: top right;     /* 以右上角为基准，贴边不跑位 */
 }
 .box_1{
     
@@ -22,8 +33,10 @@ display:flex;
     flex-direction: column; /* 纵向排列：从上到下依次摆放按钮 */
     gap: 25px; /* 按钮之间的垂直空隙 */
     width: fit-content;
-    margin-top:200px;
+    margin-top: calc(200px - 25vh); /* 向上移动 1/4 屏幕高度 */
     margin-left:200px; /* 上80px，左右auto → 整组菜单页面水平居中 */
+    transform: scale(var(--fit, 1)); /* 跟随窗口等比缩放 */
+    transform-origin: top left;      /* 以左上角为基准 */
 }
 
 /* 菜单按钮盒子样式 */
@@ -46,6 +59,36 @@ display:flex;
     background-color: #137c3f; /* 悬浮变绿色 */
     transform: scale(1.05); /* 轻微放大 */
 }
+
+/* ================== 标题：健康诊室（田字格 + 动漫卡通风） ================== */
+.game-title{
+    width: 250px;              /* 与下方菜单按钮同宽，天然对齐 */
+    display: grid;
+    grid-template-columns: repeat(2, auto); /* 收紧字距，更紧凑 */
+    justify-content: center;
+    column-gap: 14px;
+    row-gap: 0;
+    margin-bottom: 5px;
+}
+.game-title span{
+    font-family: "楷体";
+    font-size: 96px;           /* 再次放大标题 */
+    font-weight: 900;          /* 整体加粗 */
+    line-height: 1.05;
+    color: #1e9e50;            /* 健、康 → 绿色填充 */
+    -webkit-text-stroke: 3px #fff;       /* 白色描边 → 卡通贴纸感 */
+    paint-order: stroke fill;  /* 描边画在填充后面，保证彩色填充完整可见 */
+    text-shadow: 4px 4px 0 rgba(30, 30, 30, 0.3); /* 右下投影增加立体感 */
+    cursor: default;
+    transition: transform 0.2s ease;
+    user-select: none;
+}
+/* 左右交替倾斜 + 轻微错落，营造活泼的动漫感 */
+.game-title span:nth-child(1){ transform: rotate(-10deg) translateY(3px); }
+.game-title span:nth-child(2){ transform: rotate(10deg)  translateY(-3px); }
+.game-title span:nth-child(3){ transform: rotate(9deg)   translateY(-2px); color: #1e6ee5; } /* 诊 → 蓝色填充 */
+.game-title span:nth-child(4){ transform: rotate(-9deg)  translateY(2px); color: #1e6ee5; } /* 室 → 蓝色填充 */
+.game-title span:hover{ transform: scale(1.15) rotate(0deg); } /* 悬停弹起 */
 /* 背景视频样式 */
 .bg-video {
     position: fixed;
@@ -219,6 +262,8 @@ display:flex;
     height: 600px;
     object-fit: cover; /* 按比例铺满小框，超出部分裁剪 */
     z-index: 5; /* 在背景之上、角色面板之下 */
+    transform: scale(var(--fit, 1)); /* 跟随窗口等比缩放 */
+    transform-origin: bottom right;  /* 以右下角为基准，贴边不跑位 */
 }
 
 /* ================== 开始游戏：背景选择按钮 + 游戏场景 ================== */
@@ -260,6 +305,8 @@ display:flex;
     height: 600px;
     overflow: hidden; /* 裁掉容器外的部分，只露出图片上 3/4 */
     z-index: 9;
+    transform: scale(var(--fit, 1)); /* 跟随窗口等比缩放 */
+    transform-origin: bottom right;
 }
 .game-sprite{
     /* 角色图原始比例 3:4（360x480）。显示 600px 高 = 全图的 3/4，
@@ -275,7 +322,8 @@ display:flex;
     position: fixed;
     left: 50%;
     bottom: 20px;
-    transform: translateX(-50%);
+    transform: translateX(-50%) scale(var(--fit, 1)); /* 居中 + 等比缩放 */
+    transform-origin: bottom center;
     width: min(880px, 88vw);
     min-height: 120px;
     background-color: rgba(255, 255, 255, 0.93);
@@ -363,4 +411,6 @@ display:flex;
     border-radius: 8px;
     cursor: pointer;
     z-index: 10;
+    transform: scale(var(--fit, 1)); /* 跟随窗口等比缩放 */
+    transform-origin: top right;
 }

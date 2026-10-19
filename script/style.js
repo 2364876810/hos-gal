@@ -14,6 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     girl.addEventListener('mouseleave', () => { girl.src = defaultSrc; });
 });
 
+// ================== 页面自适应：按 1920x1080 设计稿等比缩放 ==================
+// 窗口任何比例下，UI 都按 min(宽比, 高比) 缩放，不溢出不变形
+const PAGE_ZOOM = 1.5; // 所有元素统一放大倍数（贴边角为基准，向页面中心方向膨胀）
+function fitPageScale() {
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080) * PAGE_ZOOM;
+    document.documentElement.style.setProperty('--fit', s);
+}
+window.addEventListener('resize', fitPageScale);
+fitPageScale();
+
 // ================== 角色选择面板 ==================
 // 角色以"角色素材"里的子文件夹为单位：
 // 每个子文件夹 = 一个角色，文件夹名 = 角色名，文件夹里的第一张图片 = 封面

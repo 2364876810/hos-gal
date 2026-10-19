@@ -4,7 +4,7 @@
 
 启动:
     python server.py
-然后浏览器访问:  http://127.0.0.1:5000/
+然后浏览器访问:  http://127.0.0.1:8080/
 """
 
 import os
@@ -107,7 +107,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    HOST, PORT = "0.0.0.0", 5000
+    HOST, PORT = "0.0.0.0", 8080
     server = HTTPServer((HOST, PORT), Handler)
     print(f"后端已启动 →  http://127.0.0.1:{PORT}/  (Ctrl+C 退出)")
     try:
