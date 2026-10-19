@@ -1,0 +1,312 @@
+.wrap{
+   display: flex;
+   gap: 10px;
+    margin-top: 30px;
+   justify-content: flex-end; /* 内部盒子全部靠右 */
+   margin-right:10px; /* 盒子组距离页面右边缘留出10px空隙，防止贴边 */
+}
+.box_1{
+    
+    width:fit-content;
+    height:fit-content;
+    background-color: #4a9645;
+display:flex;
+  justify-content:center; /*水平居中*/
+  align-items:center; /*垂直居中*/
+    font-family: '楷体';
+    font-size: 20px;
+    color: #fff;
+}
+.menu-wrap {
+    display: flex;
+    flex-direction: column; /* 纵向排列：从上到下依次摆放按钮 */
+    gap: 25px; /* 按钮之间的垂直空隙 */
+    width: fit-content;
+    margin-top:200px;
+    margin-left:200px; /* 上80px，左右auto → 整组菜单页面水平居中 */
+}
+
+/* 菜单按钮盒子样式 */
+.menu-btn {
+    width: 250px;
+    height: 70px;
+    background-color: #acccb3;
+    border-radius: 8px; /* 圆角，更柔和 */
+    /* 文字设置 */
+    color: #ffffff;
+    font-family: "楷体";
+    font-size: 30px;
+    text-align: center;
+    line-height: 50px; /* 单行文字垂直居中 */
+    white-space: nowrap; /* 禁止文字换行 */
+    cursor: pointer; /* 鼠标悬浮变成小手 */
+    transition: all 0.2s ease; /* 过渡动画，悬浮变化顺滑 */
+}
+.menu-btn:hover {
+    background-color: #137c3f; /* 悬浮变绿色 */
+    transform: scale(1.05); /* 轻微放大 */
+}
+/* 背景视频样式 */
+.bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* 保持视频比例，铺满屏幕，超出部分裁剪 */
+    object-fit: cover;
+    z-index: -2; /* 放到最底层，在文字盒子后面 */
+}
+
+
+.mask{
+    position: fixed;
+    top:0;left:0;
+    width:100vw;height:100vh;
+    background-color: rgba(0,0,0,0.2);
+    z-index: -1; /* 盖在视频上面、内容下面 */
+}
+
+/* ================== 角色选择面板 ================== */
+.role-mask{
+    position: fixed;
+    top:0;left:0;
+    width:100vw;height:100vh;
+    background-color: rgba(0,0,0,0.5); /* 半透明暗色，突出面板 */
+    z-index: 10;
+    display: flex;
+    align-items: center;    /* 面板垂直居中 */
+    justify-content: center; /* 面板水平居中 */
+}
+.role-panel{
+    width: 680px;
+    max-width: 92vw;
+    max-height: 80vh;
+    background-color: #f4f8f1;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.role-head{
+    display: flex;
+    justify-content: space-between; /* 标题在左，关闭按钮在右 */
+    align-items: center;
+}
+.role-title{
+    font-family: "楷体";
+    font-size: 26px;
+    color: #137c3f;
+    font-weight: bold;
+}
+.role-close{
+    font-size: 28px;
+    line-height: 1;
+    color: #888;
+    cursor: pointer;
+}
+.role-close:hover{ color: #333; }
+.role-grid{
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* 自适应列数 */
+    gap: 14px;
+    overflow-y: auto; /* 角色太多时面板内部滚动 */
+    padding: 4px;
+}
+.role-card{
+    position: relative; /* 作为"已选择"徽标的定位基准 */
+    background-color: #fff;
+    border: 2px solid #d5e3d0;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-family: "楷体";
+    font-size: 16px;
+    color: #333;
+    word-break: break-all; /* 长文件名自动换行 */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.role-card:hover{
+    transform: scale(1.03);
+    border-color: #137c3f;
+}
+.role-card.selected{
+    border-color: #137c3f;
+    background-color: #e7f3e4; /* 选中高亮 */
+}
+.role-card.selected::after{
+    content: '✓ 已选择'; /* 右上角徽标 */
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: #137c3f;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+.role-foot{
+    margin-top: 14px;
+    font-family: "楷体";
+    font-size: 16px;
+    color: #137c3f;
+    text-align: right;
+}
+.role-toast{
+    position: fixed;
+    left: 50%;
+    bottom: 60px;
+    transform: translateX(-50%);
+    background-color: rgba(19, 124, 63, 0.92);
+    color: #fff;
+    font-family: "楷体";
+    font-size: 18px;
+    padding: 10px 26px;
+    border-radius: 8px;
+    z-index: 20; /* 盖在面板之上 */
+    pointer-events: none; /* 不挡下面的点击 */
+    animation: toastFade 2s ease forwards;
+}
+@keyframes toastFade{
+    0%   { opacity: 0; transform: translate(-50%, 10px); }
+    15%  { opacity: 1; transform: translate(-50%, 0); }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+.role-card img{
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    object-position: center top; /* 裁剪时优先保留图片上半部分（人物头部通常在上方） */
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+.role-cover-ph{
+    width: 100%;
+    height: 110px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    background-color: #eef3ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+.role-new{
+    border-style: dashed; /* 虚线边框区别于普通角色卡 */
+    color: #4a9645;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+}
+.role-tip{
+    grid-column: 1 / -1; /* 提示文字占满一整行 */
+    text-align: center;
+    color: #777;
+    font-family: "楷体";
+    padding: 30px 0;
+}
+
+/* ================== 看板娘 ================== */
+.kanban-girl{
+    position: fixed;
+    right: 100px;   /* 距右边 20px */
+    bottom: 20px;  /* 距底部 20px */
+    width: 400px;
+    height: 600px;
+    object-fit: cover; /* 按比例铺满小框，超出部分裁剪 */
+    z-index: 5; /* 在背景之上、角色面板之下 */
+}
+
+/* ================== 开始游戏：背景选择按钮 + 游戏场景 ================== */
+.game-actions{
+    display: flex;
+    justify-content: flex-end; /* 按钮靠右：取消、开始 */
+    gap: 12px;
+    margin-top: 14px;
+}
+.game-btn{
+    width: 110px;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    font-family: "楷体";
+    font-size: 18px;
+    cursor: pointer;
+}
+.game-btn.cancel{ background-color: #dcdcdc; color: #555; }
+.game-btn.start{ background-color: #137c3f; color: #fff; }
+
+.game-scene{
+    position: fixed;
+    inset: 0; /* 铺满全屏 */
+    z-index: 8; /* 盖住主菜单内容 */
+}
+.game-bg{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top; /* 背景同样顶部优先 */
+    display: block;
+}
+.game-sprite-wrap{
+    position: fixed;
+    right: 80px;    /* 距右边 30px */
+    bottom: 0;      /* 贴合页面底部 */
+    width: 500px;
+    height: 600px;
+    overflow: hidden; /* 裁掉容器外的部分，只露出图片上 3/4 */
+    z-index: 9;
+}
+.game-sprite{
+    /* 角色图原始比例 3:4（360x480）。显示 600px 高 = 全图的 3/4，
+       所以整张图按 800px 高渲染，容器只露出上面 600px */
+    width: 700px;
+    height: 1000px;
+    object-fit: cover;
+    object-position: center top; /* 顶部优先保留 */
+    margin-left: -50px; /* (600-500)/2，水平居中裁剪 */
+    display: block;
+}
+.game-dialog{
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: min(880px, 88vw);
+    min-height: 120px;
+    background-color: rgba(255, 255, 255, 0.93);
+    border-radius: 12px;
+    padding: 14px 20px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    z-index: 10;
+}
+.game-name{
+    font-family: "楷体";
+    font-weight: bold;
+    color: #137c3f;
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+.game-text{
+    font-family: "楷体";
+    font-size: 18px;
+    color: #333;
+}
+.game-exit{
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background-color: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-family: "楷体";
+    font-size: 16px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10;
+}
