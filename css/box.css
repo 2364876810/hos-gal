@@ -213,7 +213,7 @@ display:flex;
 /* ================== 看板娘 ================== */
 .kanban-girl{
     position: fixed;
-    right: 100px;   /* 距右边 20px */
+    right: 140px;   /* 距右边 20px */
     bottom: 20px;  /* 距底部 20px */
     width: 400px;
     height: 600px;
@@ -297,6 +297,60 @@ display:flex;
     font-size: 18px;
     color: #333;
 }
+.game-input-bar{
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+.game-input{
+    flex: 1;
+    height: 40px;
+    border: 1px solid #cdd8c7;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-family: "楷体";
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    background-color: #f9fbf7;
+    transition: border-color 0.2s;
+}
+.game-input:focus{
+    border-color: #137c3f;
+}
+.game-send{
+    height: 40px;
+    padding: 0 22px;
+    background-color: #137c3f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: "楷体";
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.game-send:hover{
+    background-color: #0f6333;
+}
+.game-send:disabled{
+    background-color: #9ec2a7;
+    cursor: not-allowed;
+}
+.game-chat-history{
+    max-height: 180px;
+    overflow-y: auto;
+    margin-top: 4px;
+    padding-right: 4px;
+}
+.game-chat-line{
+    font-family: "楷体";
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 4px;
+}
+.game-chat-line.user{ color: #137c3f; }
+.game-chat-line.bot{ color: #333; }
 .game-exit{
     position: fixed;
     top: 16px;

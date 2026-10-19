@@ -1,3 +1,15 @@
+// ================== 看板娘：鼠标悬停替换图片 ==================
+document.addEventListener('DOMContentLoaded', () => {
+    const girl = document.querySelector('.kanban-girl');
+    if (!girl) return;
+    const defaultSrc = girl.dataset.defaultSrc || girl.src;
+    const hoverSrc   = girl.dataset.hoverSrc;
+    if (!hoverSrc) return;
+
+    girl.addEventListener('mouseenter', () => { girl.src = hoverSrc; });
+    girl.addEventListener('mouseleave', () => { girl.src = defaultSrc; });
+});
+
 // ================== 角色选择面板 ==================
 // 角色以"角色素材"里的子文件夹为单位：
 // 每个子文件夹 = 一个角色，文件夹名 = 角色名，文件夹里的第一张图片 = 封面
@@ -364,11 +376,22 @@ function startGame(bgPath) {
             <div class="game-sprite-wrap"><img class="game-sprite" alt="角色立绘"></div>
             <div class="game-dialog">
                 <div class="game-name"></div>
-                <div class="game-text"></div>
+                <div class="game-chat-history"></div>
+                <div class="game-input-bar">
+                    <input class="game-input" type="text" placeholder="输入你的话，回车发送...">
+                    <button class="game-send">发送</button>
+                </div>
             </div>
             <div class="game-exit">返回菜单</div>`;
         document.body.appendChild(scene);
         scene.querySelector('.game-exit').addEventListener('click', exitGame);
+
+        // 输入框交互
+        const input = scene.querySelector('.game-input');
+        const sendBtn = scene.querySelector('.game-send');
+        const send = () => sendUserMessage(scene, input, sendBtn);
+        sendBtn.addEventListener('click', send);
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
     }
 
     scene.querySelector('.game-bg').src = './' + bgPath;
@@ -385,8 +408,50 @@ function startGame(bgPath) {
     }
 
     scene.querySelector('.game-name').textContent = currentRole;
-    scene.querySelector('.game-text').textContent = '（对话内容待接入……）';
+    // 切换到新场景时清空历史（保留场景时不清）
+    if (scene.querySelector('.game-chat-history').children.length === 0) {
+        scene.querySelector('.game-chat-history').innerHTML = '';
+    }
     scene.style.display = 'block';
+}
+
+// 追加一条对话到历史区
+function appendChatLine(scene, text, type) {
+    const box = scene.querySelector('.game-chat-history');
+    const line = document.createElement('div');
+    line.className = 'game-chat-line ' + (type === 'user' ? 'user' : 'bot');
+    line.textContent = (type === 'user' ? '你：' : '角色：') + text;
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight; // 滚到底部
+}
+
+// 发送用户消息 → 调用后端 /api/chat
+async function sendUserMessage(scene, input, sendBtn) {
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    appendChatLine(scene, userText, 'user');
+    input.value = '';
+    sendBtn.disabled = true;
+
+    try {
+        const resp = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_text: userText,
+                role_name: currentRole,
+            }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || '请求失败');
+        appendChatLine(scene, data.reply, 'bot');
+    } catch (err) {
+        appendChatLine(scene, '（后端未启动或出错）' + err.message, 'bot');
+    } finally {
+        sendBtn.disabled = false;
+        input.focus();
+    }
 }
 
 function exitGame() {
