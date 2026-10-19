@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const hoverSrc   = girl.dataset.hoverSrc;
     if (!hoverSrc) return;
 
+    // 预加载悬停图片：页面打开时就提前下载，悬停时瞬间切换
+    const preloader = new Image();
+    preloader.src = hoverSrc;
+
     girl.addEventListener('mouseenter', () => { girl.src = hoverSrc; });
     girl.addEventListener('mouseleave', () => { girl.src = defaultSrc; });
 });
