@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>大学生创新项目</title>
+      <link rel="stylesheet" crossorigin href="/assets/index-BxI_CPEj.css">
+    </head>
+    <body>
+        <video class="bg-video" autoplay muted loop playsinline>
+            <source src="/assets/%E8%83%8C%E6%99%AF-Cjv04EHB.mp4" type="video/mp4">
+        </video>
+        <div class="mask"></div>
+        <div class="wrap">
+                <div class="box_1">用户</div>
+                 <div class="box_1">余额</div>
+                  <div class="box_1">关于我们</div>
+        </div>
+        <div class="menu-wrap">
+             <div class="game-title"><span>健</span><span>康</span><span>诊</span><span>室</span></div>
+             <div class="menu-btn" id="start-btn">开始咨询</div>
+            <div class="menu-btn">我的存档</div>
+            <div class="menu-btn" id="role-btn">角色选择</div>
+            <div class="menu-btn">问题反馈</div>
+        </div>
+        <img class="kanban-girl"
+             src="/assets/%E7%9C%8B%E6%9D%BF%E5%A8%98_small-CpRQlHS0.webp"
+             data-hover-src="./image/看板娘/点击触发.png"
+             data-default-src="./image/看板娘/看板娘_small.webp"
+             alt="看板娘">
+        <!-- 游戏场景：静态写在 HTML 里，默认隐藏，由 JS 控制显示/隐藏 -->
+        <div class="game-scene" style="display:none">
+            <img class="game-bg" alt="游戏背景">
+            <div class="game-sprite-wrap"><img class="game-sprite" alt="角色立绘"></div>
+            <div class="game-dialog">
+                <div class="game-name"></div>
+                <div class="game-chat-history"></div>
+                <div class="game-input-bar">
+                    <input class="game-input" type="text" placeholder="输入你的话，回车发送...">
+                    <button class="game-send">发送</button>
+                </div>
+            </div>
+            <div class="game-exit">返回菜单</div>
+        </div>
+        <script src="./角色素材/roles.js?v=20261019"></script>
+        <script src="./script/style.js?v=20261019-5"></script>
+    </body>
+</html>

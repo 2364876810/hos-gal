@@ -94,6 +94,12 @@ async function loadRoles(grid) {
         return;
     }
 
+    // 服务器扫描到 0 个角色，但静态清单里有：说明目录扫描不可用（如 Vite 开发服务器），
+    // 退回清单，别让角色面板变成空的
+    if (roles.length === 0 && Array.isArray(window.ROLE_LIST) && window.ROLE_LIST.length) {
+        roles = window.ROLE_LIST;
+    }
+
     if (roles.length === 0) {
         grid.innerHTML = '<div class="role-tip">角色素材里还没有角色文件夹，请先在 角色素材/ 下新建角色文件夹并放入图片</div>';
     }
