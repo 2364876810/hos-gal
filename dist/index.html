@@ -5,16 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>大学生创新项目</title>
         <!-- 样式由 src/main.jsx 统一 import box.css，此处不再重复引用 -->
-      <script type="module" crossorigin src="/assets/index-BJUGSsTp.js"></script>
-      <link rel="stylesheet" crossorigin href="/assets/index-utVks5HF.css">
+      <script type="module" crossorigin src="/assets/index-DkCn9J_j.js"></script>
+      <link rel="stylesheet" crossorigin href="/assets/index-9Q27dxHi.css">
     </head>
     <body>
         <!-- React 挂载点：Main 总组件渲染在这里 -->
         <div id="root"></div>
 
+        <!-- 场景加载遮罩：选择场景后显示，素材缓存完成再进入剧情 -->
+        <div class="game-loading" style="display:none">
+            <div class="game-loading-spinner"></div>
+            <div class="game-loading-text">正在准备场景...</div>
+        </div>
+
         <!-- 游戏场景：静态写在 HTML 里，默认隐藏，由 JS 控制显示/隐藏 -->
         <div class="game-scene" style="display:none">
             <img class="game-bg" alt="游戏背景">
+
+            <!-- 好感度条：全局跨角色共享，显示在顶部 -->
+            <div class="game-love">
+                <span class="game-love-icon">❤</span>
+                <div class="game-love-bar"><div class="game-love-fill"></div></div>
+                <span class="game-love-num">50</span>
+            </div>
+
             <div class="game-sprite-wrap"><img class="game-sprite" alt="角色立绘"></div>
             <!-- 云朵气泡：显示角色最新回复，随内容自适应大小 -->
             <div class="game-cloud" style="display:none">

@@ -85,8 +85,16 @@ class Handler(BaseHTTPRequestHandler):
         if safe_path.startswith(".."):
             self.send_error(403); return
 
-        full = os.path.join(BASE_DIR, safe_path)
-        if not os.path.isfile(full):
+        # 静态文件查找顺序：
+        # 1. dist/ 目录（Vite 构建产物：index.html、assets/）
+        # 2. 项目根目录（角色素材、image、css、script 等）
+        dist_path = os.path.join(BASE_DIR, "dist", safe_path)
+        root_path = os.path.join(BASE_DIR, safe_path)
+        if os.path.isfile(dist_path):
+            full = dist_path
+        elif os.path.isfile(root_path):
+            full = root_path
+        else:
             self.send_error(404, "Not Found: " + path); return
 
         ext = os.path.splitext(full)[1].lower()
@@ -98,8 +106,11 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", mime)
             self.send_header("Content-Length", str(len(data)))
-            # 禁用缓存：文件更新后浏览器刷新即可拿到最新版
-            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            # 构建产物可长期缓存（hash 文件名），其他文件禁用缓存
+            if safe_path.startswith("assets/"):
+                self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+            else:
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
             self.end_headers()
             self.wfile.write(data)
         except Exception as e:
