@@ -303,47 +303,131 @@ display:flex;
     bottom: 0;      /* 贴合页面底部 */
     width: 500px;
     height: 600px;
-    overflow: hidden; /* 裁掉容器外的部分，只露出图片上 3/4 */
     z-index: 9;
     transform: scale(var(--fit, 1)); /* 跟随窗口等比缩放 */
     transform-origin: bottom right;
 }
 .game-sprite{
-    /* 角色图原始比例 3:4（360x480）。显示 600px 高 = 全图的 3/4，
-       所以整张图按 800px 高渲染，容器只露出上面 600px */
-    width: 700px;
-    height: 1000px;
-    object-fit: cover;
-    object-position: center top; /* 顶部优先保留 */
-    margin-left: -50px; /* (600-500)/2，水平居中裁剪 */
+    /* 完整显示整张立绘，不再裁剪 */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom; /* 底部对齐页面底边 */
     display: block;
 }
+/* ================== 场景加载遮罩 ==================
+   点"开始"后覆盖全屏，等背景与角色图片缓存完再进入剧情界面 */
+.game-loading{
+    position: fixed;
+    inset: 0;
+    z-index: 99; /* 盖住主菜单与游戏场景 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    background-color: rgba(18, 28, 20, 0.78);
+}
+.game-loading-spinner{
+    width: 54px;
+    height: 54px;
+    border: 5px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #4fd07f;
+    border-radius: 50%;
+    animation: loadingSpin 0.9s linear infinite;
+}
+.game-loading-text{
+    font-family: "楷体";
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: #fff;
+}
+@keyframes loadingSpin{
+    to{ transform: rotate(360deg); }
+}
+/* ================== 角色回复对话框 ==================
+   普通对话框样式：锚点在立绘左 1/4 处（right: 455px），
+   从锚点向左生成、右端压在立绘上（z-index 高于立绘）。
+   外层负责 --fit 等比缩放（transform-origin 右上=锚点），
+   内层大小由文字多少决定，文字区有滚动上限，
+   不会下探遮挡底部对话文字。 */
+.game-cloud{
+    position: fixed;
+    top: calc(14% + 30px); /* 下移 30px */
+    right: 455px;         /* 立绘左 1/4 处 */
+    transform: scale(var(--fit, 1));
+    transform-origin: right top; /* 从锚点向左下生长 */
+    z-index: 10;          /* 高于立绘(9) */
+}
+.game-cloud-box{
+    width: max-content;   /* 大小完全由文字多少决定 */
+    max-width: 460px;
+    min-width: 260px;
+    min-height: 90px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;   /* 作为右下角省略气泡的定位基准 */
+    background-color: rgba(255, 255, 255, 0.96);
+    border-radius: 40px;  /* 四角统一大圆角 */
+    padding: 22px 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    animation: cloudPop 0.25s ease-out;
+}
+/* 右下角"从大变小"的椭圆气泡串，指示对话来自右侧立绘 */
+.game-cloud-box::before,
+.game-cloud-box::after,
+.game-cloud-dot{
+    content: '';
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-radius: 50%;
+}
+.game-cloud-box::before{        /* 大 */
+    right: -20px;
+    bottom: -6px;
+    width: 28px;
+    height: 21px;
+}
+.game-cloud-box::after{         /* 中 */
+    right: -34px;
+    bottom: -17px;
+    width: 18px;
+    height: 14px;
+}
+.game-cloud-dot{                /* 小 */
+    right: -45px;
+    bottom: -26px;
+    width: 11px;
+    height: 8px;
+}
+.game-cloud-text{
+    width: 100%;
+    overflow-y: auto;     /* 极长回复内部滚动兜底 */
+    max-height: 44vh;
+    font-family: "楷体";
+    font-size: 20px;
+    color: #333;
+    line-height: 1.7;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+@keyframes cloudPop{
+    from{ transform: scale(0.6); opacity: 0; }
+    to{ transform: scale(1); opacity: 1; }
+}
+/* 对话区容器：不再用白色大面板，气泡直接浮在游戏场景上 */
 .game-dialog{
     position: fixed;
     left: 50%;
     bottom: 20px;
     transform: translateX(-50%) scale(var(--fit, 1)); /* 居中 + 等比缩放 */
     transform-origin: bottom center;
-    width: min(880px, 88vw);
-    min-height: 120px;
-    background-color: rgba(255, 255, 255, 0.93);
-    border-radius: 12px;
-    padding: 14px 20px;
+    width: min(760px, 90vw);
+    padding: 0 10px;
     box-sizing: border-box;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
     z-index: 10;
-}
-.game-name{
-    font-family: "楷体";
-    font-weight: bold;
-    color: #137c3f;
-    font-size: 20px;
-    margin-bottom: 6px;
-}
-.game-text{
-    font-family: "楷体";
-    font-size: 18px;
-    color: #333;
 }
 .game-input-bar{
     display: flex;
@@ -353,6 +437,7 @@ display:flex;
 .game-input{
     flex: 1;
     height: 40px;
+    background-color: rgba(255, 255, 255, 0.92);
     border: 1px solid #cdd8c7;
     border-radius: 8px;
     padding: 0 12px;
@@ -386,19 +471,71 @@ display:flex;
     cursor: not-allowed;
 }
 .game-chat-history{
-    max-height: 180px;
+    max-height: 220px;
     overflow-y: auto;
-    margin-top: 4px;
-    padding-right: 4px;
+    padding: 4px 6px;
 }
+/* 一行对话 = 名字标签 + 气泡；用户消息整行反向靠右 */
 .game-chat-line{
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.game-chat-line.user{ flex-direction: row-reverse; }
+.game-bubble-name{
+    flex-shrink: 0;
+    font-family: "楷体";
+    font-size: 13px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* 保证在任意背景上可读 */
+    padding-bottom: 12px;
+}
+.game-bubble{
+    position: relative;
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 14px;
     font-family: "楷体";
     font-size: 16px;
     line-height: 1.5;
-    margin-bottom: 4px;
+    word-break: break-word;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
-.game-chat-line.user{ color: #137c3f; }
-.game-chat-line.bot{ color: #333; }
+/* 角色气泡：左侧白色，尾巴朝左 */
+.game-chat-line.bot .game-bubble{
+    background-color: rgba(255, 255, 255, 0.94);
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+.game-chat-line.bot .game-bubble::after{
+    content: '';
+    position: absolute;
+    left: -7px;
+    bottom: 8px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 8px solid rgba(255, 255, 255, 0.94);
+}
+/* 用户气泡：右侧绿色，尾巴朝右 */
+.game-chat-line.user .game-bubble{
+    background-color: #137c3f;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.game-chat-line.user .game-bubble::after{
+    content: '';
+    position: absolute;
+    right: -7px;
+    bottom: 8px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 8px solid #137c3f;
+}
 .game-exit{
     position: fixed;
     top: 16px;
@@ -414,3 +551,74 @@ display:flex;
     transform: scale(var(--fit, 1)); /* 跟随窗口等比缩放 */
     transform-origin: top right;
 }
+/* 好感度条：固定在右上角返回按钮左侧 */
+.game-love{
+    position: fixed;
+    top: 16px;
+    right: 140px; /* 给返回按钮留空间 */
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(0, 0, 0, 0.45);
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: #fff;
+    font-family: "楷体";
+    font-size: 14px;
+    transform: scale(var(--fit, 1));
+    transform-origin: top right;
+}
+.game-love-icon{
+    color: #ff5577;
+    font-size: 18px;
+    line-height: 1;
+}
+.game-love-bar{
+    width: 120px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.game-love-fill{
+    height: 100%;
+    width: 50%; /* JS 动态更新 */
+    background: linear-gradient(90deg, #ff7a9c, #ff3366);
+    border-radius: 6px;
+    transition: width 0.4s ease;
+}
+.game-love-num{
+    min-width: 2em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    user-select: none;
+}
+.game-love-num:hover{
+    color: #ff9ab0;
+    text-decoration: underline;
+}
+/* +/- 按钮：默认隐藏，hover 好感度条时出现 */
+.game-love-btns{
+    display: none;
+    gap: 4px;
+}
+.game-love:hover .game-love-btns{
+    display: inline-flex;
+}
+.love-btn{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s;
+}
+.love-btn.plus:hover{ background-color: rgba(100,255,150,0.5); }
+.love-btn.minus:hover{ background-color: rgba(255,100,120,0.5); }

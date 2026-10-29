@@ -34,6 +34,34 @@ MIME_MAP = {
     ".svg":  "image/svg+xml",
 }
 
+ROLES_DIR = os.path.join(BASE_DIR, "角色素材")
+BG_DIR = os.path.join(BASE_DIR, "image", "背景图选择")
+IMG_EXTS = (".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif")
+
+
+def scan_assets():
+    """实时扫描角色素材和背景图，新增文件后刷新页面即可生效。"""
+    roles = []
+    if os.path.isdir(ROLES_DIR):
+        for name in sorted(os.listdir(ROLES_DIR)):
+            role_dir = os.path.join(ROLES_DIR, name)
+            if not os.path.isdir(role_dir):
+                continue
+            images = []  # 角色文件夹下所有图片的相对路径
+            for fn in sorted(os.listdir(role_dir)):
+                if os.path.splitext(fn)[1].lower() in IMG_EXTS:
+                    images.append(f"角色素材/{name}/{fn}")
+            cover = images[0] if images else None  # 角色选择面板封面：排序第一张
+            roles.append({"name": name, "cover": cover, "images": images})
+
+    backgrounds = []
+    if os.path.isdir(BG_DIR):
+        for fn in sorted(os.listdir(BG_DIR)):
+            if os.path.splitext(fn)[1].lower() in IMG_EXTS:
+                backgrounds.append(f"image/背景图选择/{fn}")
+
+    return {"roles": roles, "backgrounds": backgrounds}
+
 
 class Handler(BaseHTTPRequestHandler):
     # ---------- 静态文件 ----------
@@ -41,6 +69,16 @@ class Handler(BaseHTTPRequestHandler):
         path = self.path.split("?")[0]  # 去掉 query string
         if path == "/":
             path = "/index.html"
+
+        # ---------- /api/roles：实时扫描素材目录 ----------
+        if path == "/api/roles":
+            self._json(200, scan_assets())
+            return
+
+        # ---------- /api/affection：取当前全局好感度 ----------
+        if path == "/api/affection":
+            self._json(200, {"affection": body.get_affection()})
+            return
 
         # 安全：禁止 .. 穿越
         safe_path = os.path.normpath(path.lstrip("/"))
@@ -67,9 +105,35 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:
             self.send_error(500, str(e))
 
-    # ---------- /api/chat ----------
+    # ---------- /api/chat & /api/affection ----------
     def do_POST(self):
         path = self.path.split("?")[0]
+
+        # ---------- /api/affection：自定义好感度 ----------
+        if path == "/api/affection":
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length) if length else b""
+            try:
+                data = json.loads(raw.decode("utf-8")) if raw else {}
+            except Exception:
+                self._json(400, {"error": "请求体不是合法 JSON"}); return
+
+            action = (data.get("action") or "set").strip()
+            try:
+                if action == "reset":
+                    v = body.reset_affection()
+                elif action == "change":
+                    delta = int(data.get("delta", 0))
+                    v = body.change_affection(delta)
+                else:  # set 或其他
+                    v = body.set_affection(int(data.get("value", body.get_affection())))
+                self._json(200, {"affection": v})
+            except ValueError as e:
+                self._json(400, {"error": "参数错误: " + str(e)})
+            except Exception as e:
+                self._json(500, {"error": str(e)})
+            return
+
         if path != "/api/chat":
             self.send_error(404); return
 
