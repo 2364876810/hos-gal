@@ -457,13 +457,13 @@ function preloadImage(src) {
     });
 }
 
-// 待缓存清单：当前背景 + 角色素材里所有角色的图片
+// 待缓存清单：当前背景 + 当前角色的图片（不再预加载所有角色，避免卡顿）
 function gameAssetUrls(bgPath) {
     const urls = ['./' + bgPath];
-    if (Array.isArray(window.ROLE_LIST)) {
-        for (const role of window.ROLE_LIST) {
+    if (Array.isArray(window.ROLE_LIST) && currentRole) {
+        const role = window.ROLE_LIST.find(r => r.name === currentRole);
+        if (role) {
             if (Array.isArray(role.images) && role.images.length) {
-                // 后端 scan_assets 返回的完整图片列表：全部预缓存
                 for (const p of role.images) urls.push('./' + p);
             } else if (role.cover) {
                 urls.push('./' + role.cover);
